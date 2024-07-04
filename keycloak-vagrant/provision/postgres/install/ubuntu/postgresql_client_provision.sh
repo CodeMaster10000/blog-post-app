@@ -1,0 +1,1 @@
+sudo apt install postgresql-14 -y
