@@ -1,19 +1,17 @@
-package com.scalefocus.mk.blog.api.shared.mapper;
+package com.scalefocus.mk.blog.api.blog;
 
-import com.scalefocus.mk.blog.api.shared.dto.BlogPostDto;
-import com.scalefocus.mk.blog.api.shared.model.BlogPost;
 
-public final class BlogPostMapper {
+final class BlogPostMapper {
 
     private BlogPostMapper() {
         throw new IllegalStateException("Can not create instances of this utility class");
     }
 
-    public static BlogPost createBlogPostDtoToEntity(BlogPostDto dto) {
+    static BlogPost createBlogPostDtoToEntity(BlogPostDto dto) {
         return blogPostDtoToEntity(dto);
     }
 
-    public static BlogPost blogPostDtoToEntity(BlogPostDto dto) {
+    static BlogPost blogPostDtoToEntity(BlogPostDto dto) {
         if (dto == null) {
             return null;
         }

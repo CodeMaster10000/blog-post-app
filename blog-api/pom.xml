@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.scalefocus.mk</groupId>
 	<artifactId>blog-api</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.5-SNAPSHOT</version>
 	<name>blog-api</name>
 	<description>Blog post API</description>
 	<url/>

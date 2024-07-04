@@ -61,8 +61,7 @@ class SecurityConfig {
   public SecurityFilterChain resourceServerFilterChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(auth -> auth
             .requestMatchers(new AntPathRequestMatcher("/", HttpMethod.OPTIONS.name())).permitAll()
-            .requestMatchers(new AntPathRequestMatcher("/api/v1/test")).hasRole("admin")
-            .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+            .requestMatchers(new AntPathRequestMatcher("/", HttpMethod.GET.name())).permitAll()
             .anyRequest().authenticated())
         .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
         .oauth2Login(oauth2 -> oauth2
@@ -70,7 +69,7 @@ class SecurityConfig {
               OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
               OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
                   oauthToken.getAuthorizedClientRegistrationId(), oauthToken.getName());
-              if (client != null) response.sendRedirect("/");
+              if (client != null) response.sendRedirect("/swagger-ui/index.html");
             })
         )
         .logout(logout -> logout

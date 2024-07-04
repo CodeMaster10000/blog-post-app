@@ -1,5 +1,6 @@
-package com.scalefocus.mk.blog.api.shared.model;
+package com.scalefocus.mk.blog.api.blog;
 
+import com.scalefocus.mk.blog.api.shared.persistence.EntityMarker;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
-public final class BlogTag implements EntityMarker {
+final class BlogTag implements EntityMarker {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

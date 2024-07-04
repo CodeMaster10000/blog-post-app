@@ -1,6 +1,5 @@
 package com.scalefocus.mk.blog.api.blog;
 
-import com.scalefocus.mk.blog.api.shared.dto.BlogPostDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +53,11 @@ final class BlogPostController {
             @PathVariable String tagName) {
         Set<BlogPostDto> blogPosts = blogPostService.getBlogPostsByTag(tagName);
         return new ResponseEntity<>(blogPosts, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Void> deleteBlogPost(@PathVariable int postId) {
+        return blogPostService.removeBlogPost(postId);
     }
 
 }

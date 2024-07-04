@@ -1,5 +1,6 @@
-package com.scalefocus.mk.blog.api.shared.model;
+package com.scalefocus.mk.blog.api.blog;
 
+import com.scalefocus.mk.blog.api.shared.persistence.EntityMarker;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
-public final class BlogPost implements EntityMarker {
+final class BlogPost implements EntityMarker {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +29,10 @@ public final class BlogPost implements EntityMarker {
 
     @Column(columnDefinition = "TEXT")
     private String text;
+
+    @ToString.Include
+    @EqualsAndHashCode.Include
+    private String ownerUsername;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "blog_post_tags",

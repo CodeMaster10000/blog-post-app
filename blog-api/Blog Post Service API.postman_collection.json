@@ -45,7 +45,7 @@
 																	"variable": [
 																		{
 																			"key": "postId",
-																			"value": "1",
+																			"value": "2",
 																			"description": "(Required) "
 																		},
 																		{
@@ -115,12 +115,12 @@
 																	"variable": [
 																		{
 																			"key": "postId",
-																			"value": "<integer>",
+																			"value": "1",
 																			"description": "(Required) "
 																		},
 																		{
 																			"key": "tagName",
-																			"value": "<string>",
+																			"value": "christianity",
 																			"description": "(Required) "
 																		}
 																	]
@@ -184,7 +184,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"title\": \"Destroyer\",\n  \"text\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+													"raw": "",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -206,7 +206,7 @@
 													"variable": [
 														{
 															"key": "postId",
-															"value": "1",
+															"value": "2",
 															"description": "(Required) "
 														}
 													]
@@ -268,6 +268,32 @@
 													"body": "<string>"
 												}
 											]
+										},
+										{
+											"name": "remove Blog Post",
+											"request": {
+												"method": "DELETE",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/posts/:postId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"posts",
+														":postId"
+													],
+													"variable": [
+														{
+															"key": "postId",
+															"value": "2"
+														}
+													]
+												}
+											},
+											"response": []
 										}
 									]
 								},
@@ -302,7 +328,7 @@
 															"variable": [
 																{
 																	"key": "tagName",
-																	"value": "<string>",
+																	"value": "christianity",
 																	"description": "(Required) "
 																}
 															]
@@ -363,7 +389,14 @@
 										"header": [
 											{
 												"key": "Accept",
-												"value": "*/*"
+												"value": "*/*",
+												"disabled": true
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token}}",
+												"type": "text",
+												"disabled": true
 											}
 										],
 										"url": {
@@ -507,12 +540,121 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "Get Keycloak Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Save token to collection variable\", function () {\r",
+							"    var jsonResponse = pm.response.json();\r",
+							"    var token = jsonResponse.access_token;\r",
+							"    pm.collectionVariables.set(\"token\", token);\r",
+							"    console.log(\"Token saved to collection variables: \" + token);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "blog-api",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "4gJdZltVysucfICtMpr7dCktiQSUrOJ3",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "beforecool",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "beforecool",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://10.0.0.15:8081/realms/BlogApp/protocol/openid-connect/token",
+					"protocol": "http",
+					"host": [
+						"10",
+						"0",
+						"0",
+						"15"
+					],
+					"port": "8081",
+					"path": [
+						"realms",
+						"BlogApp",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
 		}
 	],
 	"variable": [
 		{
 			"key": "baseUrl",
 			"value": "http://localhost:8080"
+		},
+		{
+			"key": "token",
+			"value": ""
 		}
 	]
 }

@@ -1,6 +1,5 @@
 package com.scalefocus.mk.blog.api.shared.persistence;
 
-import com.scalefocus.mk.blog.api.shared.model.EntityMarker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.slf4j.Logger;
@@ -34,6 +33,18 @@ public class PersistenceService {
         try {
             em.merge(entity);
             logger.info("Merged entity: {}", entity);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+    }
+
+    @Transactional
+    public <T extends EntityMarker> boolean remove(T entity) {
+        try {
+            em.remove(entity);
+            logger.info("Removed entity: {}", entity);
             return true;
         } catch (Exception e) {
             logger.error(e.getMessage());

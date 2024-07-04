@@ -1,21 +1,20 @@
 package com.scalefocus.mk.blog.api.blog;
 
-import com.scalefocus.mk.blog.api.shared.dto.BlogPostDto;
-import com.scalefocus.mk.blog.api.shared.mapper.BlogPostMapper;
-import com.scalefocus.mk.blog.api.shared.model.BlogPost;
-import com.scalefocus.mk.blog.api.shared.model.BlogTag;
-import com.scalefocus.mk.blog.api.shared.persistence.PersistenceService;
+import com.scalefocus.mk.blog.api.shared.auth.AuthService;
 import com.scalefocus.mk.blog.api.shared.exceptions.EntityPersistenceException;
+import com.scalefocus.mk.blog.api.shared.persistence.PersistenceService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
 @Service
-final class BlogPostService {
+class BlogPostService {
 
     private final BlogPostRepository blogPostRepository;
 
@@ -33,7 +32,9 @@ final class BlogPostService {
         if (blogPostRepository.existsByTitle(blogPostDto.title())) {
             return new ResponseEntity<>("Title already exists.", HttpStatus.CONFLICT);
         }
+
         BlogPost post = BlogPostMapper.createBlogPostDtoToEntity(blogPostDto);
+        post.setOwnerUsername(AuthService.getCurrentUsername());
         return persistenceService.persist(post) ? new ResponseEntity<>(HttpStatus.CREATED) : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -42,35 +43,49 @@ final class BlogPostService {
     }
 
     ResponseEntity<String> updateBlogPost(BlogPostDto updatedPost, int id) {
-        Optional<BlogPost> blogPostOpt = blogPostRepository.findById(id);
-        if (blogPostOpt.isPresent()) {
-            BlogPost blogPostEntity = blogPostOpt.get();
-            if (!blogPostEntity.getTitle().equals(updatedPost.title())) {
-                if (blogPostRepository.existsByTitle(updatedPost.title())) {
-                    return new ResponseEntity<>("Title already exists.", HttpStatus.CONFLICT);
-                } else {
-                    blogPostEntity.setTitle(updatedPost.title());
-                }
+        BlogPost blogPostEntity = getBlogPostFromDatabase(id, EntityRelation.EMPTY);
+        if (!blogPostEntity.getTitle().equals(updatedPost.title())) {
+            if (blogPostRepository.existsByTitle(updatedPost.title())) {
+                return new ResponseEntity<>("Title already exists.", HttpStatus.CONFLICT);
+            } else {
+                blogPostEntity.setTitle(updatedPost.title());
             }
-            return persistenceService.update(blogPostEntity) ?
-                    new ResponseEntity<>(HttpStatus.OK) :
-                    new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        } else {
-            throw new EntityNotFoundException("Could not find entity with id: " + id);
         }
+        return persistenceService.update(blogPostEntity) ?
+                new ResponseEntity<>(HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     ResponseEntity<Void> addTagToPost(int postId, String tagName) {
+        BlogPost post = getBlogPostFromDatabase(postId, EntityRelation.TAGS);
         BlogTag blogTag = getBlogTagEntity(tagName);
-        BlogPost post = getBlogPostEntity(postId);
         post.getTags().add(blogTag);
         return persistenceService.update(post) ?
                 new ResponseEntity<>(HttpStatus.CREATED)
                 : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private BlogPost getBlogPostEntity(int postId) {
-        Optional<BlogPost> blogPostOpt = blogPostRepository.findByIdWithTags(postId);
+    ResponseEntity<Void> removeTagFromPost(int postId, String tagName) {
+        BlogPost post = getBlogPostFromDatabase(postId, EntityRelation.TAGS);
+        BlogTag blogTag = getBlogTagEntity(tagName);
+        post.getTags().remove(blogTag);
+        return persistenceService.update(post) ?
+                new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Transactional
+    public ResponseEntity<Void> removeBlogPost(int postId) {
+        BlogPost post = getBlogPostFromDatabase(postId, EntityRelation.EMPTY);
+        return persistenceService.remove(post) ?
+                new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private BlogPost getBlogPostEntity(int postId, EntityRelation relation) {
+        Optional<BlogPost> blogPostOpt = relation.equals(EntityRelation.TAGS)
+                ? blogPostRepository.findByIdWithTags(postId)
+                : blogPostRepository.findById(postId);
         if (blogPostOpt.isPresent()) {
             return blogPostOpt.get();
         } else {
@@ -89,18 +104,17 @@ final class BlogPostService {
         tag.setName(tagName);
         boolean persisted = persistenceService.persist(tag);
         if (!persisted) {
-            throw new EntityPersistenceException("Could not persist blog tag: " + tagName);
+            throw new EntityPersistenceException(
+                    "Could not persist blog tag: " + tagName,
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return tag;
     }
 
-    ResponseEntity<Void> removeTagFromPost(int postId, String tagName) {
-        BlogTag blogTag = getBlogTagEntity(tagName);
-        BlogPost post = getBlogPostEntity(postId);
-        post.getTags().remove(blogTag);
-        return persistenceService.update(post) ?
-                new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    private BlogPost getBlogPostFromDatabase(int postId, EntityRelation relation) {
+        BlogPost post = getBlogPostEntity(postId, relation);
+        AuthService.validateCurrentUsername(post.getOwnerUsername());
+        return post;
     }
 
     Set<BlogPostDto> getBlogPostsByTag(String tagName) {
