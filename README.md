@@ -62,6 +62,9 @@ vagrant resume
 
 Ensure the Keycloak server is running and accessible at http://10.0.0.15:8081.
 
+The default credentials are admin:admin
+To override keycloak specific configuration, edit the environment.properties file inside the keycloak-vagrant directory.
+
 #### Application Properties
 
 Ensure you have the following configurations in your application.yml or application.properties:
@@ -124,6 +127,14 @@ mvn spring-boot:run
 ```
 
 ## API Endpoints
+
+To navigate to any of the endpoints you need to be authenticated via Keycloak,
+the default admin user credentials for the blog api user are
+
+ - username: blog-app-admin
+ - password: codemaster
+
+These can be modified within the Keycloak API or GUI.
 
 ### Blog Posts
 
