@@ -1,6 +1,6 @@
 [ {
   "id" : "ccb821ff-89df-46c5-8cb7-a1b71f883f95",
-  "realm" : "CodeMaster",
+  "realm" : "BlogApp",
   "notBefore" : 0,
   "defaultSignatureAlgorithm" : "RS256",
   "revokeRefreshToken" : false,
@@ -69,7 +69,7 @@
       "attributes" : { }
     }, {
       "id" : "81b90643-896b-49a8-b174-9c57e559d112",
-      "name" : "default-roles-codemaster",
+      "name" : "default-roles-blogapp",
       "description" : "${role_default-roles}",
       "composite" : true,
       "composites" : {
@@ -83,7 +83,7 @@
       "attributes" : { }
     } ],
     "client" : {
-      "platform-service" : [ ],
+      "blog-api" : [ ],
       "realm-management" : [ {
         "id" : "12b26c4e-257b-4405-b8b2-3f8edf68c936",
         "name" : "create-client",
@@ -344,7 +344,7 @@
   "groups" : [ ],
   "defaultRole" : {
     "id" : "81b90643-896b-49a8-b174-9c57e559d112",
-    "name" : "default-roles-codemaster",
+    "name" : "default-roles-blogapp",
     "description" : "${role_default-roles}",
     "composite" : true,
     "clientRole" : false,
@@ -381,7 +381,7 @@
   "webAuthnPolicyPasswordlessAcceptableAaguids" : [ ],
   "users" : [ {
     "id" : "011567e3-c382-46d8-b699-443d6c89d105",
-    "username" : "codemaster-admin",
+    "username" : "blog-app-admin",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : false,
@@ -413,12 +413,12 @@
     "clientId" : "account",
     "name" : "${client_account}",
     "rootUrl" : "${authBaseUrl}",
-    "baseUrl" : "/realms/CodeMaster/account/",
+    "baseUrl" : "/realms/BlogApp/account/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "redirectUris" : [ "/realms/CodeMaster/account/*" ],
+    "redirectUris" : [ "/realms/BlogApp/account/*" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -443,12 +443,12 @@
     "clientId" : "account-console",
     "name" : "${client_account-console}",
     "rootUrl" : "${authBaseUrl}",
-    "baseUrl" : "/realms/CodeMaster/account/",
+    "baseUrl" : "/realms/BlogApp/account/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "redirectUris" : [ "/realms/CodeMaster/account/*" ],
+    "redirectUris" : [ "/realms/BlogApp/account/*" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -535,7 +535,7 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "d43c4d26-881e-4dbc-8de2-1ca7c8b9e736",
-    "clientId" : "platform-service",
+    "clientId" : "blog-api",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
@@ -593,12 +593,12 @@
     "clientId" : "security-admin-console",
     "name" : "${client_security-admin-console}",
     "rootUrl" : "${authAdminUrl}",
-    "baseUrl" : "/admin/CodeMaster/console/",
+    "baseUrl" : "/admin/BlogApp/console/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "redirectUris" : [ "/admin/CodeMaster/console/*" ],
+    "redirectUris" : [ "/admin/BlogApp/console/*" ],
     "webOrigins" : [ "+" ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -1881,7 +1881,7 @@
       "composites" : {
         "realm" : [ "create-realm" ],
         "client" : {
-          "CodeMaster-realm" : [ "view-events", "view-realm", "query-clients", "view-identity-providers", "manage-users", "view-users", "manage-realm", "manage-events", "query-users", "view-clients", "view-authorization", "manage-identity-providers", "create-client", "query-realms", "query-groups", "manage-authorization", "manage-clients", "impersonation" ],
+          "BlogApp-realm" : [ "view-events", "view-realm", "query-clients", "view-identity-providers", "manage-users", "view-users", "manage-realm", "manage-events", "query-users", "view-clients", "view-authorization", "manage-identity-providers", "create-client", "query-realms", "query-groups", "manage-authorization", "manage-clients", "impersonation" ],
           "master-realm" : [ "manage-events", "create-client", "manage-identity-providers", "query-groups", "view-users", "view-realm", "query-users", "view-clients", "query-realms", "manage-realm", "impersonation", "query-clients", "view-identity-providers", "view-events", "view-authorization", "manage-clients", "manage-authorization", "manage-users" ]
         }
       },
@@ -1908,7 +1908,7 @@
     "client" : {
       "security-admin-console" : [ ],
       "admin-cli" : [ ],
-      "CodeMaster-realm" : [ {
+      "BlogApp-realm" : [ {
         "id" : "987ed782-d3b7-436f-86ee-955e2822c0e7",
         "name" : "view-events",
         "description" : "${role_view-events}",
@@ -1963,7 +1963,7 @@
         "composite" : true,
         "composites" : {
           "client" : {
-            "CodeMaster-realm" : [ "query-groups", "query-users" ]
+            "BlogApp-realm" : [ "query-groups", "query-users" ]
           }
         },
         "clientRole" : true,
@@ -2016,7 +2016,7 @@
         "composite" : true,
         "composites" : {
           "client" : {
-            "CodeMaster-realm" : [ "query-clients" ]
+            "BlogApp-realm" : [ "query-clients" ]
           }
         },
         "clientRole" : true,
@@ -2503,8 +2503,8 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "7de51484-fe35-47ca-8baf-85b5139040f1",
-    "clientId" : "CodeMaster-realm",
-    "name" : "CodeMaster Realm",
+    "clientId" : "BlogApp-realm",
+    "name" : "BlogApp Realm",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
