@@ -5,14 +5,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.stereotype.Component;
 
+@Component
 public final class AuthService {
 
-    private AuthService() {
-        throw new AssertionError("No instance of this class");
-    }
-
-    public static String getCurrentUsername() {
+    public String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof JwtAuthenticationToken jwtAuthenticationToken) {
             Jwt jwt = (Jwt) jwtAuthenticationToken.getPrincipal();
@@ -21,7 +19,7 @@ public final class AuthService {
         return null;
     }
 
-    public static void validateCurrentUsername(final String username) {
+    public void validateCurrentUsername(final String username) {
         String currentUsername = getCurrentUsername();
        if (!username.equals(currentUsername)) {
            throw new IllegalOperationException("Unable to perform operation with provided username");

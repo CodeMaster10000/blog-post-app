@@ -8,7 +8,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/posts")
-final class BlogPostController {
+public final class BlogPostController {
 
     private final BlogPostService blogPostService;
 

@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-class BlogPostService {
+public class BlogPostService {
 
     private final BlogPostRepository blogPostRepository;
 
@@ -24,11 +24,14 @@ class BlogPostService {
 
     private final BlogPostMapper blogPostMapper;
 
-    BlogPostService(BlogPostRepository blogPostRepository, PersistenceService persistenceService, BlogTagRepository tagRepository, BlogPostMapper blogPostMapper) {
+    private final AuthService authService;
+
+    BlogPostService(BlogPostRepository blogPostRepository, PersistenceService persistenceService, BlogTagRepository tagRepository, BlogPostMapper blogPostMapper, AuthService authService) {
         this.blogPostRepository = blogPostRepository;
         this.persistenceService = persistenceService;
         this.tagRepository = tagRepository;
         this.blogPostMapper = blogPostMapper;
+        this.authService = authService;
     }
 
     ResponseEntity<String> createBlogPost(BlogPostDto blogPostDto) {
@@ -37,7 +40,7 @@ class BlogPostService {
         }
 
         BlogPost post = blogPostMapper.blogPostDtoToEntity(blogPostDto);
-        post.setOwnerUsername(AuthService.getCurrentUsername());
+        post.setOwnerUsername(authService.getCurrentUsername());
         return persistenceService.persist(post) ? new ResponseEntity<>(HttpStatus.CREATED) : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -116,7 +119,7 @@ class BlogPostService {
 
     private BlogPost getBlogPostFromDatabase(int postId, EntityRelation relation) {
         BlogPost post = getBlogPostEntity(postId, relation);
-        AuthService.validateCurrentUsername(post.getOwnerUsername());
+        authService.validateCurrentUsername(post.getOwnerUsername());
         return post;
     }
 

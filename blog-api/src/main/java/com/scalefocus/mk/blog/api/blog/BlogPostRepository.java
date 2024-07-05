@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Repository
 @Transactional(readOnly = true)
-interface BlogPostRepository extends JpaRepository<BlogPost, Integer> {
+public interface BlogPostRepository extends JpaRepository<BlogPost, Integer> {
 
     boolean existsByTitle(String title);
 

@@ -15,7 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
-final class BlogPost implements EntityMarker {
+public final class BlogPost implements EntityMarker {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

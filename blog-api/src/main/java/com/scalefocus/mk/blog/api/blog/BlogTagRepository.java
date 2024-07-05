@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 @Transactional(readOnly = true)
-interface BlogTagRepository extends JpaRepository<BlogTag, Integer> {
+public interface BlogTagRepository extends JpaRepository<BlogTag, Integer> {
 
     Optional<BlogTag> findByName(String tagName);
 
