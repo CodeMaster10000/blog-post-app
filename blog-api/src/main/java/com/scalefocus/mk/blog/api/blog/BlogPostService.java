@@ -22,10 +22,13 @@ class BlogPostService {
 
     private final BlogTagRepository tagRepository;
 
-    BlogPostService(BlogPostRepository blogPostRepository, PersistenceService persistenceService, BlogTagRepository tagRepository) {
+    private final BlogPostMapper blogPostMapper;
+
+    BlogPostService(BlogPostRepository blogPostRepository, PersistenceService persistenceService, BlogTagRepository tagRepository, BlogPostMapper blogPostMapper) {
         this.blogPostRepository = blogPostRepository;
         this.persistenceService = persistenceService;
         this.tagRepository = tagRepository;
+        this.blogPostMapper = blogPostMapper;
     }
 
     ResponseEntity<String> createBlogPost(BlogPostDto blogPostDto) {
@@ -33,7 +36,7 @@ class BlogPostService {
             return new ResponseEntity<>("Title already exists.", HttpStatus.CONFLICT);
         }
 
-        BlogPost post = BlogPostMapper.createBlogPostDtoToEntity(blogPostDto);
+        BlogPost post = blogPostMapper.blogPostDtoToEntity(blogPostDto);
         post.setOwnerUsername(AuthService.getCurrentUsername());
         return persistenceService.persist(post) ? new ResponseEntity<>(HttpStatus.CREATED) : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
