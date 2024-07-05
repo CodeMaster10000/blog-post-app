@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.scalefocus.mk</groupId>
 	<artifactId>blog-api</artifactId>
-	<version>0.1.8-SNAPSHOT</version>
+	<version>0.1.9-SNAPSHOT</version>
 	<name>blog-api</name>
 	<description>Blog post API</description>
 	<url/>
@@ -76,6 +76,13 @@
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+
+		<!-- JWT -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
 		</dependency>
 
 		<dependency>

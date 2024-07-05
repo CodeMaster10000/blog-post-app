@@ -12,4 +12,5 @@ public interface BlogTagRepository extends JpaRepository<BlogTag, Integer> {
 
     Optional<BlogTag> findByName(String tagName);
 
+    void deleteByName(String tagName);
 }
