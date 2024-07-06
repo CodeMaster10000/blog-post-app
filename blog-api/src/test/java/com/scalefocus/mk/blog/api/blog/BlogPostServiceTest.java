@@ -18,6 +18,12 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for the {@link BlogPostService} class.
+ * <p>
+ * This class uses Mockito to mock dependencies and test the functionality of the BlogPostService class.
+ * </p>
+ */
 @ExtendWith(MockitoExtension.class)
 final class BlogPostServiceTest {
 
@@ -40,9 +46,17 @@ final class BlogPostServiceTest {
     private BlogPostService blogPostService;
 
     private static final String MOCKITO_USER = "Mockito";
-
     private static final String TAG_NAME = "Test tag";
 
+    /**
+     * Tests the creation of a blog post.
+     * <p>
+     * This test verifies that a new blog post can be created successfully.
+     * It mocks the conditions necessary for the creation process and asserts that
+     * the blog post is created with the expected status and that the appropriate methods
+     * are called on the mocked dependencies.
+     * </p>
+     */
     @Test
     void createBlogPost() {
         BlogPostDto blogPostDto = new BlogPostDto("Test Title", "Test Content");
@@ -66,6 +80,14 @@ final class BlogPostServiceTest {
         when(authService.getCurrentUsername()).thenReturn(MOCKITO_USER);
     }
 
+    /**
+     * Tests retrieving all blog posts.
+     * <p>
+     * This test verifies that all blog posts can be retrieved successfully.
+     * It mocks the repository method to return a set of blog posts and asserts
+     * that the returned set matches the expected result.
+     * </p>
+     */
     @Test
     void getAllBlogPosts() {
         Set<BlogPostDto> blogPosts = new HashSet<>();
@@ -75,6 +97,15 @@ final class BlogPostServiceTest {
         verify(blogPostRepository, times(1)).getAllBlogPostsAsDto();
     }
 
+    /**
+     * Tests updating a blog post.
+     * <p>
+     * This test verifies that an existing blog post can be updated successfully.
+     * It mocks the conditions necessary for the update process and asserts that
+     * the blog post is updated with the expected status and that the appropriate methods
+     * are called on the mocked dependencies.
+     * </p>
+     */
     @Test
     void updateBlogPost() {
         BlogPostDto updatedPost = new BlogPostDto("Updated Title", "Updated Content");
@@ -97,6 +128,15 @@ final class BlogPostServiceTest {
         verify(authService, times(1)).validateCurrentUsername(MOCKITO_USER);
     }
 
+    /**
+     * Tests removing a blog post.
+     * <p>
+     * This test verifies that a blog post can be removed successfully.
+     * It mocks the conditions necessary for the removal process and asserts that
+     * the blog post is removed with the expected status and that the appropriate methods
+     * are called on the mocked dependencies.
+     * </p>
+     */
     @Test
     void removeBlogPost() {
         BlogPost post = new BlogPost();
@@ -117,6 +157,15 @@ final class BlogPostServiceTest {
         when(persistenceService.remove(blogPostEntity)).thenReturn(true);
     }
 
+    /**
+     * Tests adding a tag to a blog post.
+     * <p>
+     * This test verifies that a tag can be added to a blog post successfully.
+     * It mocks the conditions necessary for the addition process and asserts that
+     * the tag is added with the expected status and that the appropriate methods
+     * are called on the mocked dependencies.
+     * </p>
+     */
     @Test
     void addTagToPost() {
         BlogPost post = mockBlogPost();
@@ -136,6 +185,15 @@ final class BlogPostServiceTest {
         verify(authService, times(1)).validateCurrentUsername(MOCKITO_USER);
     }
 
+    /**
+     * Tests removing a tag from a blog post.
+     * <p>
+     * This test verifies that a tag can be removed from a blog post successfully.
+     * It mocks the conditions necessary for the removal process and asserts that
+     * the tag is removed with the expected status and that the appropriate methods
+     * are called on the mocked dependencies.
+     * </p>
+     */
     @Test
     void removeTagFromPost() {
         BlogPost post = new BlogPost();
@@ -160,6 +218,14 @@ final class BlogPostServiceTest {
         when(persistenceService.update(post)).thenReturn(true);
     }
 
+    /**
+     * Tests retrieving blog posts by tag.
+     * <p>
+     * This test verifies that blog posts associated with a specific tag can be retrieved successfully.
+     * It mocks the repository method to return a set of blog posts and asserts
+     * that the returned set matches the expected result.
+     * </p>
+     */
     @Test
     void getBlogPostsByTag() {
         Set<BlogPostDto> blogPosts = new HashSet<>();
@@ -176,5 +242,4 @@ final class BlogPostServiceTest {
         blogPostEntity.setOwnerUsername(MOCKITO_USER);
         return blogPostEntity;
     }
-
 }

@@ -8,6 +8,13 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.time.Instant;
 
+/**
+ * Class representing the rate limit information for a session.
+ * <p>
+ * This class holds details about the first request time and the number of remaining tokens
+ * for a session. It is used to manage and monitor the rate limits applied to different sessions.
+ * </p>
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,6 +22,5 @@ import java.time.Instant;
 final class SessionRateHolder implements Serializable {
 
   private Instant firstRequest;
-  Integer tokens;
-
+  private Integer tokens;
 }

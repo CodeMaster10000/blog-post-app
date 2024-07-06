@@ -19,20 +19,22 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 
+/**
+ * Utility class for handling JWT tokens with Keycloak.
+ * <p>
+ * This class provides methods to obtain and validate JWT tokens from Keycloak.
+ * </p>
+ */
 @Component
 final class TokenUtil {
 
     private final String keycloakTokenUrl;
-
     private final String keycloakClientSecret;
 
     @Getter
     private final String keycloakUsername;
-
     private final String keycloakPassword;
-
     private final String clientId;
-
     private String jwt;
 
     private static final Logger logger = LoggerFactory.getLogger(TokenUtil.class);
@@ -50,6 +52,14 @@ final class TokenUtil {
         this.clientId = clientId;
     }
 
+    /**
+     * Gets the JWT token.
+     * <p>
+     * This method returns the existing JWT token if it is valid, otherwise it obtains a new token from Keycloak.
+     * </p>
+     *
+     * @return the JWT token
+     */
     String getJwtToken() {
         if (jwt == null || !isTokenValid()) {
             try {
@@ -70,7 +80,7 @@ final class TokenUtil {
             Date expiration = claims.getExpiration();
             return expiration.after(new Date());
         } catch (SignatureException | IllegalArgumentException e) {
-            System.err.println("Token validation error: " + e.getMessage());
+            logger.error("Token validation error: {}", e.getMessage());
             return false;
         }
     }

@@ -14,10 +14,18 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Service for managing Keycloak users and roles.
+ * <p>
+ * This service provides methods for creating and deleting users and roles in Keycloak.
+ * It interacts with the Keycloak Admin API to perform these operations.
+ * </p>
+ */
 @Service
 final class KeycloakClientService {
 
   private final Keycloak keycloak;
+
   private final String keycloakRealm;
 
   KeycloakClientService(Keycloak keycloak, @Value("${keycloak.realm}") String keycloakRealm) {
@@ -25,6 +33,16 @@ final class KeycloakClientService {
     this.keycloakRealm = keycloakRealm;
   }
 
+  /**
+   * Creates a new user in Keycloak.
+   * <p>
+   * This method creates a user with the specified username, password, and role in the configured Keycloak realm.
+   * </p>
+   *
+   * @param username the username of the new user
+   * @param password the password of the new user
+   * @param roleName the role to assign to the new user
+   */
   void createUser(String username, String password, String roleName) {
     UserRepresentation user = createUserRepresentation(username);
     setUserCredentials(password, user);
@@ -61,6 +79,14 @@ final class KeycloakClientService {
     usersResource.get(userId).roles().realmLevel().add(Collections.singletonList(roleRepresentation));
   }
 
+  /**
+   * Deletes a user from Keycloak.
+   * <p>
+   * This method deletes the user with the specified username from the configured Keycloak realm.
+   * </p>
+   *
+   * @param username the username of the user to delete
+   */
   void deleteUser(String username) {
     RealmResource realmResource = keycloak.realm(keycloakRealm);
     UsersResource usersResource = realmResource.users();
@@ -81,6 +107,14 @@ final class KeycloakClientService {
     }
   }
 
+  /**
+   * Creates a new role in Keycloak.
+   * <p>
+   * This method creates a role with the specified name in the configured Keycloak realm.
+   * </p>
+   *
+   * @param role the name of the new role
+   */
   void createRole(String role) {
     RealmResource realmResource = getRealmResource();
     RolesResource rolesResource = realmResource.roles();
@@ -90,10 +124,17 @@ final class KeycloakClientService {
     rolesResource.create(roleRepresentation);
   }
 
+  /**
+   * Deletes a role from Keycloak.
+   * <p>
+   * This method deletes the role with the specified ID from the configured Keycloak realm.
+   * </p>
+   *
+   * @param roleId the ID of the role to delete
+   */
   void deleteRole(String roleId) {
     RealmResource realmResource = getRealmResource();
     RolesResource rolesResource = realmResource.roles();
     rolesResource.deleteRole(roleId);
   }
-
 }
