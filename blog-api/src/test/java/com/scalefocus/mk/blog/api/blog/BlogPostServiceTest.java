@@ -40,6 +40,7 @@ final class BlogPostServiceTest {
     private BlogPostService blogPostService;
 
     private static final String MOCKITO_USER = "Mockito";
+
     private static final String TAG_NAME = "Test tag";
 
     @Test

@@ -1,6 +1,5 @@
 package com.scalefocus.mk.blog.api.shared.auth;
 
-import com.scalefocus.mk.blog.api.shared.exceptions.IllegalOperationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -22,7 +21,7 @@ public final class AuthService {
     public void validateCurrentUsername(final String username) {
         String currentUsername = getCurrentUsername();
        if (!username.equals(currentUsername)) {
-           throw new IllegalOperationException("Unable to perform operation with provided username");
+           throw new UnsupportedOperationException("Unable to perform operation with provided username");
        }
     }
 
