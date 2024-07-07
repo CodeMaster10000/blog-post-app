@@ -6,10 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;
-import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,36 +18,22 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Date;
 
 /**
- * Utility class for handling JWT tokens with Keycloak.
+ * Client class for handling JWT tokens with Keycloak.
  * <p>
  * This class provides methods to obtain and validate JWT tokens from Keycloak.
  * </p>
  */
 @Component
-final class TokenUtil {
+final class KeycloakClient {
 
-    private final String keycloakTokenUrl;
-    private final String keycloakClientSecret;
+    private final KeycloakConfig keycloakConfig;
 
-    @Getter
-    private final String keycloakUsername;
-    private final String keycloakPassword;
-    private final String clientId;
     private String jwt;
 
-    private static final Logger logger = LoggerFactory.getLogger(TokenUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(KeycloakClient.class);
 
-    TokenUtil(
-            @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String keycloakUrl,
-            @Value("${admin-cli.client-secret}") String keycloakClientSecret,
-            @Value("${keycloak-username}") String keycloakUsername,
-            @Value("${keycloak-password}") String keycloakPassword,
-            @Value("${admin-cli.client-id}") String clientId) {
-        this.keycloakTokenUrl = keycloakUrl + "/protocol/openid-connect/token";
-        this.keycloakClientSecret = keycloakClientSecret;
-        this.keycloakUsername = keycloakUsername;
-        this.keycloakPassword = keycloakPassword;
-        this.clientId = clientId;
+    KeycloakClient(KeycloakConfig keycloakConfig) {
+        this.keycloakConfig = keycloakConfig;
     }
 
     /**
@@ -71,10 +55,14 @@ final class TokenUtil {
         return jwt;
     }
 
+    String getKeycloakUsername() {
+        return this.keycloakConfig.getKeycloakUsername();
+    }
+
     private boolean isTokenValid() {
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey(keycloakClientSecret)
+                    .setSigningKey(keycloakConfig.getKeycloakClientSecret())
                     .parseClaimsJws(jwt)
                     .getBody();
             Date expiration = claims.getExpiration();
@@ -91,13 +79,14 @@ final class TokenUtil {
         headers.add("Content-Type", "application/x-www-form-urlencoded");
 
         String body = String.format("grant_type=password&client_id=%s&client_secret=%s&username=%s&password=%s",
-                clientId, keycloakClientSecret, keycloakUsername, keycloakPassword);
+                keycloakConfig.getClientId(), keycloakConfig.getKeycloakClientSecret(), keycloakConfig.getKeycloakUsername(), keycloakConfig.getKeycloakPassword());
 
         HttpEntity<String> request = new HttpEntity<>(body, headers);
-        ResponseEntity<String> response = restTemplate.exchange(keycloakTokenUrl, HttpMethod.POST, request, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(keycloakConfig.getKeycloakTokenUrl(), HttpMethod.POST, request, String.class);
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(response.getBody());
         return root.path("access_token").asText();
     }
+
 }

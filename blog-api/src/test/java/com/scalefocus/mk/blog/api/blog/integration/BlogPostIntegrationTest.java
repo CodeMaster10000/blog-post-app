@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +30,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * </p>
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Transactional
+@ContextConfiguration(classes = TestContainersConfig.class)
 class BlogPostIntegrationTest {
 
     private static int BLOG_POST_ID;
@@ -53,7 +55,7 @@ class BlogPostIntegrationTest {
     private BlogTagRepository blogTagRepository;
 
     @Autowired
-    private TokenUtil tokenUtil;
+    private KeycloakClient keycloakClient;
 
     /**
      * Sets up the test data before each test.
@@ -63,8 +65,8 @@ class BlogPostIntegrationTest {
      */
     @BeforeEach
     void validateAndRefreshToken() {
-        createBlogPostIfNotExists();
-        createBlogTagIfNotExists();
+        createBlogPostEntity();
+        createBlogTagEntity();
     }
 
     /**
@@ -90,7 +92,7 @@ class BlogPostIntegrationTest {
     void createBlogPost() {
         BlogPostDto blogPostDto = new BlogPostDto("Test Title", "Test Content");
         mockMvc.perform(post(POSTS_URL)
-                        .header("Authorization", "Bearer " + tokenUtil.getJwtToken())
+                        .header("Authorization", "Bearer " + keycloakClient.getJwtToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(blogPostDto)))
                 .andExpect(status().isCreated());
@@ -106,7 +108,7 @@ class BlogPostIntegrationTest {
     @SneakyThrows
     void getAllBlogPosts() {
         mockMvc.perform(get(POSTS_URL)
-                        .header("Authorization", "Bearer " + tokenUtil.getJwtToken()))
+                        .header("Authorization", "Bearer " + keycloakClient.getJwtToken()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
@@ -122,7 +124,7 @@ class BlogPostIntegrationTest {
     void updateBlogPost() {
         BlogPostDto blogPostDto = new BlogPostDto("Updated Title", "Updated Content");
         mockMvc.perform(put(String.format(POSTS_URL + "/%d", BLOG_POST_ID))
-                        .header("Authorization", "Bearer " + tokenUtil.getJwtToken())
+                        .header("Authorization", "Bearer " + keycloakClient.getJwtToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(blogPostDto)))
                 .andExpect(status().isOk());
@@ -138,7 +140,7 @@ class BlogPostIntegrationTest {
     @SneakyThrows
     void addTagToPost() {
         mockMvc.perform(post(String.format(POSTS_TAGS_URL, BLOG_POST_ID, TAG_NAME))
-                        .header("Authorization", "Bearer " + tokenUtil.getJwtToken()))
+                        .header("Authorization", "Bearer " + keycloakClient.getJwtToken()))
                 .andExpect(status().isCreated());
     }
 
@@ -152,7 +154,7 @@ class BlogPostIntegrationTest {
     @SneakyThrows
     void removeTagFromPost() {
         mockMvc.perform(delete(String.format(POSTS_TAGS_URL, BLOG_POST_ID, TAG_NAME))
-                        .header("Authorization", "Bearer " + tokenUtil.getJwtToken()))
+                        .header("Authorization", "Bearer " + keycloakClient.getJwtToken()))
                 .andExpect(status().isOk());
     }
 
@@ -166,7 +168,7 @@ class BlogPostIntegrationTest {
     @SneakyThrows
     void getBlogPostsByTag() {
         mockMvc.perform(get(String.format(TAGS_URL, TAG_NAME))
-                        .header("Authorization", "Bearer " + tokenUtil.getJwtToken()))
+                        .header("Authorization", "Bearer " + keycloakClient.getJwtToken()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
@@ -181,20 +183,20 @@ class BlogPostIntegrationTest {
     @SneakyThrows
     void deleteBlogPost() {
         mockMvc.perform(delete(String.format(POSTS_URL + "/%d", BLOG_POST_ID))
-                        .header("Authorization", "Bearer " + tokenUtil.getJwtToken()))
+                        .header("Authorization", "Bearer " + keycloakClient.getJwtToken()))
                 .andExpect(status().isOk());
     }
 
-    private void createBlogTagIfNotExists() {
+    private void createBlogTagEntity() {
         blogTagRepository.save(new BlogTag(null, TAG_NAME, new HashSet<>()));
     }
 
-    private void createBlogPostIfNotExists() {
+    private void createBlogPostEntity() {
         BlogPost blogPost = new BlogPost();
         blogPost.setTitle("Initial Title");
         blogPost.setText("Initial Content");
         blogPost.setTags(new HashSet<>());
-        blogPost.setOwnerUsername(tokenUtil.getKeycloakUsername());
+        blogPost.setOwnerUsername(keycloakClient.getKeycloakUsername());
         blogPostRepository.save(blogPost);
         BLOG_POST_ID = blogPost.getId();
     }
