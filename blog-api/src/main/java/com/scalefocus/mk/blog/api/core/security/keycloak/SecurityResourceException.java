@@ -17,5 +17,6 @@ final class SecurityResourceException extends RuntimeException {
   SecurityResourceException(String message) {
     super(message);
   }
+
 }
 

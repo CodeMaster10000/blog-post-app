@@ -2,6 +2,7 @@ package com.scalefocus.mk.blog.api.core.security.keycloak;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,6 +37,7 @@ import java.util.Set;
  */
 @Configuration
 @EnableWebSecurity
+@DependsOn("dockerManager")
 class SecurityConfig {
 
   private static final String REALM_ACCESS_CLAIM = "realm_access";
