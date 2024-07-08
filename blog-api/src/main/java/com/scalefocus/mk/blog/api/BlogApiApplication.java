@@ -1,5 +1,6 @@
 package com.scalefocus.mk.blog.api;
 
+import com.scalefocus.mk.blog.api.core.config.EnvironmentInitializer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -23,6 +24,8 @@ public class BlogApiApplication {
 	 * @param args command-line arguments
 	 */
 	public static void main(String[] args) {
-		SpringApplication.run(BlogApiApplication.class, args);
+		SpringApplication application = new SpringApplication(BlogApiApplication.class);
+		application.addInitializers(new EnvironmentInitializer());
+		application.run(args);
 	}
 }

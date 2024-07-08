@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.scalefocus.mk</groupId>
 	<artifactId>blog-api</artifactId>
-	<version>0.2.1-SNAPSHOT</version>
+	<version>0.2.5-SNAPSHOT</version>
 	<name>blog-api</name>
 	<description>Blog post API</description>
 	<url/>
@@ -169,6 +169,15 @@
 			<version>2.1.2</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- Environment -->
+		<!-- https://mvnrepository.com/artifact/io.github.cdimascio/dotenv-java -->
+		<dependency>
+			<groupId>io.github.cdimascio</groupId>
+			<artifactId>dotenv-java</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
 
 	</dependencies>
 
