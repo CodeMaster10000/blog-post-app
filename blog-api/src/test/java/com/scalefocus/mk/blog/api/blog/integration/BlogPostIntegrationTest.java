@@ -2,6 +2,7 @@ package com.scalefocus.mk.blog.api.blog.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scalefocus.mk.blog.api.blog.*;
+import com.scalefocus.mk.blog.api.core.config.EnvironmentInitializer;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Transactional
-@ContextConfiguration(classes = TestContainersConfig.class)
+@ContextConfiguration(initializers = EnvironmentInitializer.class, classes = TestContainersConfig.class)
 class BlogPostIntegrationTest {
 
     private static int BLOG_POST_ID;

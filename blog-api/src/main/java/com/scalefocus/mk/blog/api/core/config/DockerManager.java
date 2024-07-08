@@ -5,7 +5,6 @@ import jakarta.annotation.PreDestroy;
 import jakarta.ws.rs.ProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -30,9 +29,6 @@ final class DockerManager {
     DockerManager(DockerDataConfig dockerDataConfig) {
         this.dockerDataConfig = dockerDataConfig;
     }
-
-    @Value("${server.port}")
-    private String port;
 
     @PostConstruct
     void startContainers() {
