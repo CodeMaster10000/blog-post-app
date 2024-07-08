@@ -1,146 +1,128 @@
 
-# Blog API
+# Blog API Project
 
-## Project Description
+This project is a Blog API built with Spring Boot. It leverages various technologies such as Keycloak for security, MySQL for database management, and Docker for containerization.
 
-This is a Blog API application built with Spring Boot. The application allows users to create, update, delete, and view blog posts. Additionally, users can add tags to posts and retrieve posts by tags. The application uses Keycloak for security and authentication.
+When you run the application, Docker runs the compose file which includes required services that the application depends on.
+Only after they have been fully initialized, up and running, does the application continue running.
 
-## Installation
+## Prerequisites
 
-### Prerequisites
-
-- Java 21 or newer
+Ensure you have the following installed:
+- Docker
+- Java 21
 - Maven
-- Keycloak (for security)
-- MySQL
-- Vagrant (for Keycloak setup)
-- VirtualBox
 
-### Cloning the Repository
+## Setup Instructions
 
-```sh
+### Clone the repository
+
+```bash
 git clone https://github.com/CodeMaster10000/blog-post-app.git
-cd blog-post-app
 ```
 
-### Building the Project
+### Navigate into the project directory
+cd blog-post-app/blog-api
+
+### Maven
+
+To build the project, run the following Maven command:
 
 ```sh
-cd blog-api
 mvn clean install
 ```
 
-### Configuration
+### Environment Variables
 
-#### Database setup
+You can modify the environment variables in the `.env` file located at the root of the project.
 
-Make sure you have created the schema blogpost_db, so that the application can connect to it.
-Open MySQL Workbench and create it.
-You can also create it through MySQL Shell.
+```env
+# .env file
 
-#### Keycloak Setup
+# Spring
+SERVER_PORT=8081
 
-1. Navigate to the keycloak-vagrant directory.
-2. Start the Vagrant machine:
+# Database
+MYSQL_IMAGE=mysql:8.0
+MYSQL_PORT=4006
+MYSQL_ROOT_PASSWORD=password
+MYSQL_DATABASE=blogpost_db
+MYSQL_HOST=localhost
 
-```sh
-cd keycloak-vagrant
-vagrant up
+# Keycloak
+KEYCLOAK_IMAGE=quay.io/keycloak/keycloak:22.0.1
+KEYCLOAK_PORT=8085
+KEYCLOAK_ADMIN=admin
+KEYCLOAK_ADMIN_PASSWORD=admin
+KEYCLOAK_HOST=localhost
+KEYCLOAK_CLIENT_ID=blog-api
+KEYCLOAK_REALM=BlogApp
+KEYCLOAK_USERNAME=beforecool
+KEYCLOAK_PASSWORD=beforecool
+KEYCLOAK_CLIENT_SECRET=4gJdZltVysucfICtMpr7dCktiQSUrOJ3
 ```
 
-3. To suspend the Vagrant machine:
+### Docker Compose
 
-```sh
-vagrant suspend
+This is the Docker Compose configuration. You can modify it to configure infrastructure services.
+
+```yaml
+version: '3.8'
+
+services:
+  keycloak:
+    image: ${KEYCLOAK_IMAGE}
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: mysql
+      KC_DB_URL_DATABASE: ${MYSQL_DATABASE}
+      KC_DB_URL_HOST: mysql  # This should refer to the MySQL service name
+      KC_DB_URL_PORT: 3306
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      KC_HTTP_PORT: ${KEYCLOAK_PORT}
+    ports:
+      - "${KEYCLOAK_PORT}:${KEYCLOAK_PORT}"
+    volumes:
+      - ./src/main/resources/keycloak/import-data.json:/opt/keycloak/data/import/keycloak-import-data.json
+      - ./src/main/resources/keycloak/start-keycloak.sh:/opt/keycloak/bin/start-keycloak.sh
+    entrypoint: ["/bin/bash", "/opt/keycloak/bin/start-keycloak.sh"]
+    depends_on:
+      - mysql
+
+  mysql:
+    image: ${MYSQL_IMAGE}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "${MYSQL_PORT}:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
+
+networks:
+  default:
+    driver: bridge
+
 ```
 
-4. To resume the Vagrant machine:
+## How to Run
 
-```sh
-vagrant resume
-```
+1. Start Docker and ensure it is running.
+2. Build the project using Maven: `mvn clean install`.
+3. Run the Spring Boot application from your IDE or using the command: `mvn spring-boot:run`.
 
-Ensure the Keycloak server is running and accessible at http://10.0.0.15:8081.
+## Important Notes
 
-The default credentials are admin:admin
-To override keycloak specific configuration, edit the environment.properties file inside the keycloak-vagrant directory.
-
-#### Application Properties
-
-Ensure you have the following configurations in your application.yml or application.properties:
-
-```properties
-spring.application.name=blog-api
-
-# Swagger / OpenAPI
-springdoc.api-docs.path=/api-docs
-springdoc.swagger-ui.enabled=true
-springdoc.swagger-ui.operationsSorter=method
-
-# Database Connection Properties
-spring.datasource.url=jdbc:mysql://localhost:3306/blogpost_db
-spring.datasource.username=root
-spring.datasource.password=password
-
-# JDBC driver name and dialect
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
-# Hibernate settings
-spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
-spring.jpa.hibernate.ddl-auto=update
-
-# Disable Open EntityManager in View
-spring.jpa.open-in-view=false
-management.endpoints.web.exposure.include=*
-
-# Virtual Threads
-spring.thread-executor=virtual
-
-# Logging
-logging.level.root=INFO
-logging.level.org.springframework.boot=INFO
-logging.level.org.springframework.security=DEBUG
-
-# Security
-spring.security.oauth2.client.registration.keycloak.client-id=blog-api
-spring.security.oauth2.client.registration.keycloak.authorization-grant-type=authorization_code
-spring.security.oauth2.client.registration.keycloak.scope=openid
-spring.security.oauth2.client.provider.keycloak.issuer-uri=http://10.0.0.15:8081/realms/BlogApp
-spring.security.oauth2.client.provider.keycloak.user-name-attribute=preferred_username
-spring.security.oauth2.resourceserver.jwt.issuer-uri=http://10.0.0.15:8081/realms/BlogApp
-
-# Keycloak client
-keycloak.auth-server-url=http://10.0.0.15:8081/auth
-keycloak.realm=BlogApp
-admin-cli.client-id=blog-api
-admin-cli.client-secret=codemaster
-```
-
-
-### Running the Application
-
-#### Running Locally
-
-```sh
-cd blog-api
-mvn spring-boot:run
-```
-
-## API Endpoints
-
-To navigate to any of the endpoints you need to be authenticated via Keycloak,
-the default admin user credentials for the blog api user are
-
- - username: blog-app-admin
- - password: codemaster
-
-These can be modified within the Keycloak API or GUI.
-
-### Blog Posts
-
-- Create a Blog Post: `POST /api/v1/posts`
-- Update a Blog Post: `PUT /api/v1/posts/{postId}`
-- Get All Blog Posts: `GET /api/v1/posts`
-- Get Blog Posts by Tag: `GET /api/v1/posts/tags/{tagName}`
-- Add Tag to Blog Post: `POST /api/v1/posts/{postId}/tags/{tagName}`
-- Remove Tag from Blog Post: `DELETE /api/v1/posts/{postId}/tags/{tagName}`
+- All source and properties files read from the environment variables specified in the `.env` file.
+- Ensure Docker, Java 21 and Maven are running before starting the application.
+- The start-up might be slow because the application context waits for infrastructure provisioning.
