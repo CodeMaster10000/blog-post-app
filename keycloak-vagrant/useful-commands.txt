@@ -1,6 +1,0 @@
-To export keycloak configuration:
-
-```bash
-cd /opt/keycloak/bin
-./kc.sh export --file /opt/keycloak/exported-realm.json
-```
