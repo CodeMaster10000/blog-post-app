@@ -20,7 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * </p>
  */
 @Component
-final class KeycloakLogoutHandler implements LogoutHandler {
+public final class KeycloakLogoutHandler implements LogoutHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(KeycloakLogoutHandler.class);
   private final RestTemplate restTemplate;

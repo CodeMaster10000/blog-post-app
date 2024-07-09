@@ -1,11 +1,12 @@
-package com.scalefocus.mk.blog.api.core.config;
+package com.scalefocus.mk.blog.api.blog.integration;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.ws.rs.ProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.TestConfiguration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,15 +20,25 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-@Component
-final class DockerManager {
+
+@TestConfiguration
+class DockerManager {
 
     private static final Logger logger = LoggerFactory.getLogger(DockerManager.class);
 
-    private final DockerDataConfig dockerDataConfig;
+    private final String keycloakUrl;
+    private final String mySqlUrl;
+    private final String mySqlUser;
+    private final String mySqlPassword;
 
-    DockerManager(DockerDataConfig dockerDataConfig) {
-        this.dockerDataConfig = dockerDataConfig;
+    DockerManager(@Value("${spring.security.oauth2.client.provider.keycloak.issuer-uri}") String keycloakUrl,
+                  @Value("${spring.datasource.url}") String mySqlUrl,
+                  @Value("${spring.datasource.username}") String mySqlUser,
+                  @Value("${spring.datasource.password}")String mySqlPassword) {
+        this.keycloakUrl = keycloakUrl;
+        this.mySqlUrl = mySqlUrl;
+        this.mySqlUser = mySqlUser;
+        this.mySqlPassword = mySqlPassword;
     }
 
     @PostConstruct
@@ -44,9 +55,10 @@ final class DockerManager {
 
     @PreDestroy
     void stopContainers() {
+        //here
         try {
             logger.info("Stopping Docker containers...");
-            List<String> command = Arrays.asList("docker-compose", "down");
+            List<String> command = Arrays.asList("docker-compose", "down", "-v");
             Process process = startProcessWithCommand(command);
             logProcessOutput(process);
             validateProcessExecution(process, "Failed to stop Docker containers. Exit code: ");
@@ -84,7 +96,7 @@ final class DockerManager {
         boolean isHealthy = false;
         while (!isHealthy) {
             try {
-                URL url = URI.create(dockerDataConfig.getKeycloakUrl()).toURL();
+                URL url = URI.create(keycloakUrl).toURL();
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 int responseCode = connection.getResponseCode();
@@ -101,12 +113,8 @@ final class DockerManager {
 
     private void waitForMySql() throws InterruptedException {
         boolean isHealthy = false;
-        String jdbcUrl = dockerDataConfig.getMySqlUrl();
-        String username = dockerDataConfig.getMySqlUser();
-        String password = dockerDataConfig.getMySqlPassword();
-
         while (!isHealthy) {
-            try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
+            try (Connection connection = DriverManager.getConnection(mySqlUrl, mySqlUser, mySqlPassword)) {
                 if (connection != null && !connection.isClosed()) {
                     isHealthy = true;
                 }

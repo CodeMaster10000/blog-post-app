@@ -16,8 +16,8 @@ services:
     ports:
       - "${KEYCLOAK_PORT}:${KEYCLOAK_PORT}"
     volumes:
-      - ./src/main/resources/keycloak/import-data.json:/opt/keycloak/data/import/keycloak-import-data.json
-      - ./src/main/resources/keycloak/start-keycloak.sh:/opt/keycloak/bin/start-keycloak.sh
+      - ./data/keycloak/import-data.json:/opt/keycloak/data/import/keycloak-import-data.json
+      - ./data/keycloak/start-keycloak.sh:/opt/keycloak/bin/start-keycloak.sh
     entrypoint: ["/bin/bash", "/opt/keycloak/bin/start-keycloak.sh"]
     depends_on:
       - mysql
@@ -35,10 +35,7 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - mysql-data:/var/lib/mysql
-
-volumes:
-  mysql-data:
+      - ./data/mysql:/var/lib/mysql
 
 networks:
   default:

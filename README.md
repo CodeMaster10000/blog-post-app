@@ -1,9 +1,8 @@
 
 # Blog API Project
 
-This project is a Blog API built with Spring Boot. It leverages various technologies such as Keycloak for security, MySQL for database management, and Docker for containerization.
-
-When you run the application, Docker runs the compose file which includes required services that the application depends on. Only after they have been fully initialized, up and running, does the application continue running.
+This project is a Blog API built with Spring Boot.
+It leverages various technologies such as Keycloak for security, MySQL for database management, and Docker for containerization.
 
 ## Prerequisites
 
@@ -23,7 +22,7 @@ git clone https://github.com/CodeMaster10000/blog-post-app.git
 Navigate into the project directory
 
 ```bash
-cd blog-post-app/blog-api
+cd blog-post-app
 ```
 
 ### Maven
@@ -31,12 +30,24 @@ cd blog-post-app/blog-api
 To build the project, run the following Maven command:
 
 ```sh
+mvn clean install -DskipTests=true
+```
+
+To build the project while running all the tests,
+switch the spring active profile to 'test' in application.properties
+
+`spring.profiles.active=test`
+
+run:
+
+```sh
 mvn clean install
 ```
 
 ### Environment Variables
 
-You can modify the environment variables in the .env file located at the root of the project.
+The entire project uses a centralized environment file.
+To change any property, navigate to the .env file at the root of the project.
 
 ```env
 # .env file
@@ -66,7 +77,9 @@ KEYCLOAK_CLIENT_SECRET=4gJdZltVysucfICtMpr7dCktiQSUrOJ3
 
 ### Docker Compose
 
-This is the Docker Compose configuration. You can modify it to configure infrastructure services.
+The application depends on the following infrastructure, described in the docker-compose.yml file.
+This is the Docker Compose configuration. It contains two services, mysql and keycloak.
+You can modify it to configure infrastructure services.
 
 ```yaml
 version: '3.8'
@@ -87,8 +100,8 @@ services:
     ports:
       - "${KEYCLOAK_PORT}:${KEYCLOAK_PORT}"
     volumes:
-      - ./src/main/resources/keycloak/import-data.json:/opt/keycloak/data/import/keycloak-import-data.json
-      - ./src/main/resources/keycloak/start-keycloak.sh:/opt/keycloak/bin/start-keycloak.sh
+      - ./data/keycloak/import-data.json:/opt/keycloak/data/import/keycloak-import-data.json
+      - ./data/keycloak/start-keycloak.sh:/opt/keycloak/bin/start-keycloak.sh
     entrypoint: ["/bin/bash", "/opt/keycloak/bin/start-keycloak.sh"]
     depends_on:
       - mysql
@@ -106,10 +119,7 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - mysql-data:/var/lib/mysql
-
-volumes:
-  mysql-data:
+      - ./data/mysql:/var/lib/mysql
 
 networks:
   default:
@@ -118,25 +128,39 @@ networks:
 
 ### How to Run
 
-1. Start Docker and ensure it is running.
-2. Build the project using Maven: `mvn clean install`.
-3. Run the Spring Boot application from your IDE or using the command: `mvn spring-boot:run`.
+1. Switch the spring profile to 'dev' `spring.profiles.active=dev`
+2. Start Docker and ensure it is running.
+3. Build the project using Maven: `mvn clean install`.
+4. Run `docker-compose up` in the root directory of the project
+5. Ensure that the containers and services within are up and running
+6. Run the Spring Boot application from your IDE or using the command: `mvn spring-boot:run`.
 
 ### Important Notes
 
 - All source and properties files read from the environment variables specified in the .env file.
 - Ensure Docker, Java 21 and Maven are running before starting the application.
-- The start-up might be slow because the application context waits for infrastructure provisioning.
+- Before starting the application, make sure the containers for the infrastructure are healthy.
+- Login on Keycloak http://localhost:8085/auth (default address)
 
-### Running the Dockerized Image
+### Clear state
 
-You can download the Dockerized image from the following link:
+After shutting down the application, if you'd like to remove the infrastructure,
 
-[Download Dockerized Image](sandbox:/mnt/data/README.md)
+run `docker-compose down -v`
 
-After downloading, run the following command to start the container:
+Although, if you only want to put them to sleep,
 
-```sh
-docker load -i blog-api-image.tar
-docker run -d -p 8081:8081 blog-api-image
-```
+run `docker-compose stop`
+
+### Using the application
+
+Go to any of these end-points,
+Keycloak should prompt you to login.
+If you do not have an account, click on 'register' to create a new account.
+
+- Create a Blog Post: `POST /api/v1/posts`
+- Update a Blog Post: `PUT /api/v1/posts/{postId}`
+- Get All Blog Posts: `GET /api/v1/posts`
+- Get Blog Posts by Tag: `GET /api/v1/posts/tags/{tagName}`
+- Add Tag to Blog Post: `POST /api/v1/posts/{postId}/tags/{tagName}`
+- Remove Tag from Blog Post: `DELETE /api/v1/posts/{postId}/tags/{tagName}`
