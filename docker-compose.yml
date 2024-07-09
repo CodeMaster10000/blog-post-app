@@ -49,10 +49,25 @@ services:
       - elasticsearch-data:/usr/share/elasticsearch/data
     networks:
       - default
+  
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - default
 
 volumes:
   mysql-data:
   elasticsearch-data:
+  rabbitmq-data:
 
 networks:
   default:
