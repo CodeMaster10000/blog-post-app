@@ -16,8 +16,6 @@ services:
     volumes:
       - ./data/keycloak/import-data.json:/opt/keycloak/data/import/keycloak-import-data.json
       - ./data/keycloak/start-keycloak.sh:/opt/keycloak/bin/start-keycloak.sh
-      - ./data/keycloak/import-data.json:/opt/keycloak/data/import/keycloak-import-data.json
-      - ./data/keycloak/start-keycloak.sh:/opt/keycloak/bin/start-keycloak.sh
     entrypoint: ["/bin/bash", "/opt/keycloak/bin/start-keycloak.sh"]
     depends_on:
       - mysql
