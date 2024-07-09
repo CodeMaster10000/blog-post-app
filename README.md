@@ -2,7 +2,8 @@
 # Blog API Project
 
 This project is a Blog API built with Spring Boot.
-It leverages various technologies such as Keycloak for security, MySQL for database management, and Docker for containerization.
+It leverages various technologies such as Keycloak for security, 
+MySQL for database management, RabbitMQ, ElasticSearch and Docker for containerization.
 
 ## Prerequisites
 
@@ -49,7 +50,7 @@ To change any property, navigate to the .env file at the root of the project.
 ```env
 # .env file
 
-# Spring
+# General
 SERVER_PORT=8081
 
 # Database
@@ -70,6 +71,15 @@ KEYCLOAK_REALM=BlogApp
 KEYCLOAK_USERNAME=beforecool
 KEYCLOAK_PASSWORD=beforecool
 KEYCLOAK_CLIENT_SECRET=4gJdZltVysucfICtMpr7dCktiQSUrOJ3
+
+# Elastic Search
+ELASTICSEARCH_IMAGE=elasticsearch:8.8.0
+ELASTICSEARCH_API_PORT=8095
+ELASTICSEARCH_CLUSTER_PORT=9300
+
+# RabitMQ
+RABBITMQ_DEFAULT_USER=user
+RABBITMQ_DEFAULT_PASS=user
 ```
 
 ### Docker Compose
@@ -79,8 +89,6 @@ This is the Docker Compose configuration. It contains two services, mysql and ke
 You can modify it to configure infrastructure services.
 
 ```yaml
-version: '3.8'
-
 services:
   keycloak:
     image: ${KEYCLOAK_IMAGE}
@@ -100,8 +108,6 @@ services:
       - ./data/keycloak/import-data.json:/opt/keycloak/data/import/keycloak-import-data.json
       - ./data/keycloak/start-keycloak.sh:/opt/keycloak/bin/start-keycloak.sh
     entrypoint: ["/bin/bash", "/opt/keycloak/bin/start-keycloak.sh"]
-    depends_on:
-      - mysql
 
   mysql:
     image: ${MYSQL_IMAGE}
@@ -117,6 +123,29 @@ services:
       retries: 5
     volumes:
       - ./data/mysql:/var/lib/mysql
+
+  elasticsearch:
+    image: ${ELASTICSEARCH_IMAGE}
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    ports:
+      - ${ELASTICSEARCH_API_PORT}:9200
+      - ${ELASTICSEARCH_CLUSTER_PORT}:9300
+    volumes:
+      - ./data/elastic:/usr/share/elasticsearch/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq
 
 networks:
   default:

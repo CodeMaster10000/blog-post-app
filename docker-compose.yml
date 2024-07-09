@@ -17,8 +17,6 @@ services:
       - ./data/keycloak/import-data.json:/opt/keycloak/data/import/keycloak-import-data.json
       - ./data/keycloak/start-keycloak.sh:/opt/keycloak/bin/start-keycloak.sh
     entrypoint: ["/bin/bash", "/opt/keycloak/bin/start-keycloak.sh"]
-    depends_on:
-      - mysql
 
   mysql:
     image: ${MYSQL_IMAGE}
@@ -33,9 +31,7 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - default
+      - ./data/mysql:/var/lib/mysql
 
   elasticsearch:
     image: ${ELASTICSEARCH_IMAGE}
@@ -46,9 +42,7 @@ services:
       - ${ELASTICSEARCH_API_PORT}:9200
       - ${ELASTICSEARCH_CLUSTER_PORT}:9300
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
-    networks:
-      - default
+      - ./data/elastic:/usr/share/elasticsearch/data
   
   rabbitmq:
     image: rabbitmq:3-management
@@ -60,14 +54,7 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
-    networks:
-      - default
-
-volumes:
-  mysql-data:
-  elasticsearch-data:
-  rabbitmq-data:
+      - ./data/rabbitmq:/var/lib/rabbitmq
 
 networks:
   default:
