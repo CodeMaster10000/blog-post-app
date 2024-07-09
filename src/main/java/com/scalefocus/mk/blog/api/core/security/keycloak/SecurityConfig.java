@@ -1,12 +1,9 @@
 package com.scalefocus.mk.blog.api.core.security.keycloak;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -22,7 +19,6 @@ import org.springframework.security.web.authentication.session.RegisterSessionAu
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,10 +31,8 @@ import java.util.Set;
  * CORS settings, and authorization rules for different endpoints.
  * </p>
  */
-@Configuration
-@EnableWebSecurity
-@DependsOn("dockerManager")
-class SecurityConfig {
+
+public class SecurityConfig {
 
   private static final String REALM_ACCESS_CLAIM = "realm_access";
   private static final String ROLES_CLAIM = "roles";
