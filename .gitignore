@@ -4,8 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### Database docker volume ###
+### Volumes ###
 data/mysql
+data/rabbitmq
+data/elastic
 
 ### STS ###
 .apt_generated
