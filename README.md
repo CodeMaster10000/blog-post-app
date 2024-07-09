@@ -27,21 +27,18 @@ cd blog-post-app
 
 ### Maven
 
-To build the project, run the following Maven command:
-
-```sh
-mvn clean install -DskipTests=true
-```
-
-To build the project while running all the tests,
-switch the spring active profile to 'test' in application.properties
-
-`spring.profiles.active=test`
-
-run:
+To build the project, without running the tests, run the following Maven command:
 
 ```sh
 mvn clean install
+```
+
+To build the project while running all the tests:
+
+```sh
+
+mvn clean install -Ptest
+
 ```
 
 ### Environment Variables
@@ -128,19 +125,17 @@ networks:
 
 ### How to Run
 
-1. Switch the spring profile to 'dev' `spring.profiles.active=dev`
-2. Start Docker and ensure it is running.
-3. Build the project using Maven: `mvn clean install`.
-4. Run `docker-compose up` in the root directory of the project
-5. Ensure that the containers and services within are up and running
-6. Run the Spring Boot application from your IDE or using the command: `mvn spring-boot:run`.
+1. Start Docker and ensure it is running.
+2. Run `docker-compose up` in the root directory of the project
+3. Ensure that the containers and services within are up and running
+4. Run the Spring Boot application from your IDE or using the command: `mvn spring-boot:run`.
+5. Login on Keycloak http://localhost:8085/auth (admin:admin)
 
 ### Important Notes
 
 - All source and properties files read from the environment variables specified in the .env file.
 - Ensure Docker, Java 21 and Maven are running before starting the application.
 - Before starting the application, make sure the containers for the infrastructure are healthy.
-- Login on Keycloak http://localhost:8085/auth (default address)
 
 ### Clear state
 
