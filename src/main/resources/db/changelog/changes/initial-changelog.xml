@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <changeSet author="mile.stanislavov (generated)" id="1720176988487-1">
+    <changeSet author="mile.stanislavov (generated)" id="1720458401057-1">
         <createTable tableName="blog_post">
             <column autoIncrement="true" name="id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -12,7 +12,7 @@
             <column name="owner_username" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="mile.stanislavov (generated)" id="1720176988487-2">
+    <changeSet author="mile.stanislavov (generated)" id="1720458401057-2">
         <createTable tableName="blog_post_tags">
             <column name="blog_post_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -22,7 +22,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="mile.stanislavov (generated)" id="1720176988487-3">
+    <changeSet author="mile.stanislavov (generated)" id="1720458401057-3">
         <createTable tableName="tag">
             <column autoIncrement="true" name="id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -32,15 +32,15 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="mile.stanislavov (generated)" id="1720176988487-4">
+    <changeSet author="mile.stanislavov (generated)" id="1720458401057-4">
         <createIndex indexName="FK4795tmdvg1kyi8extoyk72a5y" tableName="blog_post_tags">
             <column name="tag_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="mile.stanislavov (generated)" id="1720176988487-5">
+    <changeSet author="mile.stanislavov (generated)" id="1720458401057-5">
         <addForeignKeyConstraint baseColumnNames="tag_id" baseTableName="blog_post_tags" constraintName="FK4795tmdvg1kyi8extoyk72a5y" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="tag" validate="true"/>
     </changeSet>
-    <changeSet author="mile.stanislavov (generated)" id="1720176988487-6">
+    <changeSet author="mile.stanislavov (generated)" id="1720458401057-6">
         <addForeignKeyConstraint baseColumnNames="blog_post_id" baseTableName="blog_post_tags" constraintName="FKb24ggwvd5worpe321akpuvtmd" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="blog_post" validate="true"/>
     </changeSet>
 </databaseChangeLog>

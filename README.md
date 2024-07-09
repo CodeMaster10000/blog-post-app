@@ -3,8 +3,7 @@
 
 This project is a Blog API built with Spring Boot. It leverages various technologies such as Keycloak for security, MySQL for database management, and Docker for containerization.
 
-When you run the application, Docker runs the compose file which includes required services that the application depends on.
-Only after they have been fully initialized, up and running, does the application continue running.
+When you run the application, Docker runs the compose file which includes required services that the application depends on. Only after they have been fully initialized, up and running, does the application continue running.
 
 ## Prerequisites
 
@@ -21,8 +20,11 @@ Ensure you have the following installed:
 git clone https://github.com/CodeMaster10000/blog-post-app.git
 ```
 
-### Navigate into the project directory
+Navigate into the project directory
+
+```bash
 cd blog-post-app/blog-api
+```
 
 ### Maven
 
@@ -34,7 +36,7 @@ mvn clean install
 
 ### Environment Variables
 
-You can modify the environment variables in the `.env` file located at the root of the project.
+You can modify the environment variables in the .env file located at the root of the project.
 
 ```env
 # .env file
@@ -112,17 +114,29 @@ volumes:
 networks:
   default:
     driver: bridge
-
 ```
 
-## How to Run
+### How to Run
 
 1. Start Docker and ensure it is running.
 2. Build the project using Maven: `mvn clean install`.
 3. Run the Spring Boot application from your IDE or using the command: `mvn spring-boot:run`.
 
-## Important Notes
+### Important Notes
 
-- All source and properties files read from the environment variables specified in the `.env` file.
+- All source and properties files read from the environment variables specified in the .env file.
 - Ensure Docker, Java 21 and Maven are running before starting the application.
 - The start-up might be slow because the application context waits for infrastructure provisioning.
+
+### Running the Dockerized Image
+
+You can download the Dockerized image from the following link:
+
+[Download Dockerized Image](sandbox:/mnt/data/README.md)
+
+After downloading, run the following command to start the container:
+
+```sh
+docker load -i blog-api-image.tar
+docker run -d -p 8081:8081 blog-api-image
+```
