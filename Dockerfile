@@ -1,36 +1,40 @@
-# Use the official Maven image as the base image for the build stage
+# Build Stage
 FROM maven:3.9.8-eclipse-temurin-21 AS blog-api-builder
 
+# Create app directory
 RUN mkdir /app
 
-# Copy the needed project files to the working directory (/app)
+# Copy necessary files for building the application
 COPY pom.xml /app/pom.xml
+COPY src /app/src
 COPY .env /app/.env
-COPY docker-compose.yml /app/docker-compose.yml
 
-# Copy the rest of the application source code to the working directory (/app)
-COPY src app/src
-
+# Set working directory
 WORKDIR /app
 
-# Package the application, skipping tests
-RUN mvn clean package -DskipTests
+# Build the application and skip tests
+RUN mvn clean package -DskipTests=true
 
-# Copy Liquibase configuration files to the appropriate location in the working directory (/app)
-COPY src/main/resources/db/changelog /app/src/main/resources/db/changelog
-
-# Use the official Eclipse Temurin JRE image as the base image for the runtime stage
+# Runtime Stage
 FROM eclipse-temurin:21-jre
 
-# Set the working directory inside the container
+# Set working directory inside the container
 WORKDIR /app
 
 # Copy the packaged application from the build stage
-COPY --from=blog-api-builder /app/target/blog-api-*.jar ./blog-api.jar
+COPY --from=blog-api-builder /app/target/blog-api-*.jar /app/blog-api.jar
 
+# Copy the .env file to the runtime container
+COPY .env /app/.env
+
+# Copy the docker-compose.yml file to the runtime container
+COPY docker-compose.yml /app/docker-compose.yml
+
+# Copy the data folder to the runtime container
+COPY data/keycloak /app/data/keycloak
 
 # Specify the command to run the application
-CMD ["java", "-jar", "blog-api.jar"]
+CMD ["java", "-jar", "/app/blog-api.jar", "--spring.profiles.active=dev"]
 
-# Expose the application port (optional, specify the port your application uses)
-EXPOSE 8081
+# Expose the application port
+EXPOSE ${SERVER_PORT}
