@@ -30,14 +30,14 @@ cd blog-post-app
 To build the project, without running the tests, run the following Maven command:
 
 ```sh
-mvn clean install
+mvn clean package
 ```
 
 To build the project while running all the tests:
 
 ```sh
 
-mvn clean install -Ptest
+mvn clean package -Ptest
 
 ```
 
@@ -128,8 +128,8 @@ networks:
 1. Start Docker and ensure it is running.
 2. Run `docker-compose up` in the root directory of the project
 3. Ensure that the containers and services within are up and running
-4. Run the Spring Boot application from your IDE or using the command: `mvn spring-boot:run`.
-5. Login on Keycloak http://localhost:8085/auth (admin:admin)
+4. Login on Keycloak http://localhost:8085/auth (admin:admin)
+5. Run the Spring Boot application from your IDE or using the command: `mvn spring-boot:run`.
 
 ### Important Notes
 
