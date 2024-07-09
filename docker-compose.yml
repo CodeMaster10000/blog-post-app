@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   keycloak:
     image: ${KEYCLOAK_IMAGE}
@@ -16,8 +14,8 @@ services:
     ports:
       - "${KEYCLOAK_PORT}:${KEYCLOAK_PORT}"
     volumes:
-      - ./src/main/resources/keycloak/import-data.json:/opt/keycloak/data/import/keycloak-import-data.json
-      - ./src/main/resources/keycloak/start-keycloak.sh:/opt/keycloak/bin/start-keycloak.sh
+      - ./data/keycloak/import-data.json:/opt/keycloak/data/import/keycloak-import-data.json
+      - ./data/keycloak/start-keycloak.sh:/opt/keycloak/bin/start-keycloak.sh
     entrypoint: ["/bin/bash", "/opt/keycloak/bin/start-keycloak.sh"]
     depends_on:
       - mysql
@@ -36,9 +34,26 @@ services:
       retries: 5
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./data/mysql:/etc/mysql/conf.d
+    networks:
+      - default
+
+  elasticsearch:
+    image: ${ELASTICSEARCH_IMAGE}
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    ports:
+      - ${ELASTICSEARCH_API_PORT}:9200
+      - ${ELASTICSEARCH_CLUSTER_PORT}:9300
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - default
 
 volumes:
   mysql-data:
+  elasticsearch-data:
 
 networks:
   default:
