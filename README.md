@@ -200,10 +200,13 @@ volumes:
 
 ### Notice!
 
-There are two .env files, one in the `container` directory
-and one in the root directory.
+There are TWO .env files.
 
-The one in the `container` directory applies to the `Fully Containerized` setup
+- In the `container` directory 
+- In the root directory.
+
+The one in the `container` directory applies to the `Fully Containerized` setup.
+
 The one in the root directory applies to `Containerized Infrastructure` setup
 
 ### Fully Containerized
