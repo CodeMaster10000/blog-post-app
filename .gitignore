@@ -4,10 +4,6 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### Volumes ###
-data/mysql
-data/rabbitmq
-data/elastic
 
 ### STS ###
 .apt_generated

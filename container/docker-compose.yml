@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  keycloak:
+    image: ${KEYCLOAK_IMAGE}
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: mysql
+      KC_DB_URL_DATABASE: ${KEYCLOAK_DATABASE}
+      KC_DB_URL_HOST: mysql
+      KC_DB_URL_PORT: ${MYSQL_INTERNAL_PORT}
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      KC_HTTP_PORT: ${KEYCLOAK_PORT}
+    ports:
+      - "${KEYCLOAK_PORT}:${KEYCLOAK_PORT}"
+    volumes:
+      - ./data/config/keycloak:/opt/keycloak/data
+    entrypoint: ["/bin/bash", "/opt/keycloak/data/start-keycloak.sh"]
+    depends_on:
+      - mysql
+
+  mysql:
+    image: ${MYSQL_IMAGE}
+    container_name: mysql
+    environment:
+      KEYCLOAK_DATABASE: ${KEYCLOAK_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "${MYSQL_PORT}:${MYSQL_INTERNAL_PORT}"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./data/config/mysql/mysql_init.sh:/docker-entrypoint-initdb.d/mysql_init.sh
+
+  elasticsearch:
+    image: ${ELASTICSEARCH_IMAGE}
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    ports:
+      - ${ELASTICSEARCH_API_PORT}:${ELASTICSEARCH_INTERNAL_API_PORT}
+      - ${ELASTICSEARCH_CLUSTER_PORT}:${ELASTICSEARCH_CLUSTER_PORT}
+    volumes:
+      - elastic_data:/usr/share/elasticsearch/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "${RABBITMQ_PORT}:${RABBITMQ_PORT}"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  blog-api:
+    image: blog-api:0.2.6
+    container_name: blog-api
+    environment:
+      SERVER_PORT: ${SERVER_PORT}
+      MYSQL_HOST: mysql
+      MYSQL_PORT: ${MYSQL_INTERNAL_PORT}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      KEYCLOAK_HOST: keycloak
+      KEYCLOAK_PORT: ${KEYCLOAK_PORT}
+      ELASTICSEARCH_HOST: elasticsearch
+      ELASTICSEARCH_API_PORT: ${ELASTICSEARCH_INTERNAL_API_PORT}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    depends_on:
+      - keycloak
+      - mysql
+      - elasticsearch
+      - rabbitmq
+    volumes:
+      - ./data/config/keycloak:/app/data/keycloak
+    entrypoint: ["/bin/bash", "/app/data/keycloak/wait-for-keycloak.sh", "java", "-jar", "blog-api.jar", "--spring.profiles.active=dev"]
+
+volumes:
+  mysql_data:
+  elastic_data:
+  rabbitmq_data:

@@ -14,9 +14,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,6 +27,7 @@ import java.util.List;
 class DockerManager {
 
     private static final Logger logger = LoggerFactory.getLogger(DockerManager.class);
+    private static final String RELATIVE_CONTAINER_DIRECTORY = "container";
 
     private final String keycloakUrl;
     private final String mySqlUrl;
@@ -44,7 +47,7 @@ class DockerManager {
     @PostConstruct
     void startContainers() {
         try {
-            runDockerComposeUp();
+            runDockerComposeUp(List.of("mysql", "keycloak"));
             waitForKeycloakInstance();
             waitForMySql();
         } catch (IOException | InterruptedException e) {
@@ -69,9 +72,11 @@ class DockerManager {
 
     }
 
-    private void runDockerComposeUp() throws IOException, InterruptedException {
+    private void runDockerComposeUp(List<String> serviceNames) throws IOException, InterruptedException {
         logger.info("Starting Docker containers...");
-        List<String> command = Arrays.asList("docker-compose", "up", "--build", "-d");
+        List<String> command = new ArrayList<>(List.of("docker-compose", "up"));
+        command.addAll(serviceNames);
+        command.addAll(List.of("--build", "-d"));
         Process process = startProcessWithCommand(command);
         logProcessOutput(process);
         validateProcessExecution(process, "Failed to start Docker containers. Exit code: ");
@@ -88,6 +93,7 @@ class DockerManager {
 
     private static Process startProcessWithCommand(List<String> command) throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.directory(Paths.get(RELATIVE_CONTAINER_DIRECTORY).toFile());
         processBuilder.redirectErrorStream(true);
         return processBuilder.start();
     }

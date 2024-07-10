@@ -2,7 +2,7 @@
 
 
 # Perform the import
-bash /opt/keycloak/bin/kc.sh import --file /opt/keycloak/data/import/keycloak-import-data.json
+bash /opt/keycloak/bin/kc.sh import --file /opt/keycloak/data/import-data.json
 
 sleep 10
 
