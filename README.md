@@ -28,18 +28,10 @@ cd blog-post-app
 
 ### Maven
 
-To build the project, without running the tests, run the following Maven command:
+To build the project, run the following Maven command:
 
 ```sh
 mvn clean package
-```
-
-To build the project while running all the tests:
-
-```sh
-
-mvn clean package -Ptest
-
 ```
 
 ### Environment Variables
@@ -234,8 +226,9 @@ To run the service outside a container:
 2. go to `container` package and run `docker-compose up --scale blog-api=0` in the container package
 3. Ensure that the containers and services within are up and running
 4. Login on Keycloak http://localhost:8085/auth (admin:admin)
-5. Run the application from an IDE or java -jar /target/blog-api-0.2.7-SNAPSHOT.jar
-6. Use the application
+5. Make sure to change the spring profile to dev in application.properties -> `spring.profiles.active=dev`
+6. Run the application from an IDE or java -jar /target/blog-api-0.2.7-SNAPSHOT.jar
+7. Use the application
 
 ### Using the application
 

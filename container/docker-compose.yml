@@ -123,5 +123,3 @@ volumes:
   mysql_data:
   elastic_data:
   rabbitmq_data:
-  zookeeper:
-  kafka:
