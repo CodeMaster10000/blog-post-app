@@ -19,7 +19,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 @Configuration
 @EnableWebSecurity
 @Profile("test")
-@DependsOn("dockerManager")
+@DependsOn("testContainersConfig")
 class TestSecurityConfig extends SecurityConfig {
 
     public TestSecurityConfig(OAuth2AuthorizedClientService authorizedClientService,

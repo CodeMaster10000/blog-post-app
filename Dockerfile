@@ -5,8 +5,8 @@ FROM maven:3.9.8-eclipse-temurin-21 AS blog-api-builder
 RUN mkdir /app
 
 # Copy necessary files for building the application
-COPY ../pom.xml /app/pom.xml
-COPY ../src /app/src
+COPY pom.xml /app/pom.xml
+COPY src /app/src
 COPY .env /app/.env
 
 # Set working directory
@@ -24,14 +24,11 @@ WORKDIR /app
 # Copy the packaged application from the build stage
 COPY --from=blog-api-builder /app/target/blog-api-*.jar /app/blog-api.jar
 
-# Copy the .env file to the runtime container
-COPY .env /app/.env
-
-# Copy the docker-compose.yml file to the runtime container
-COPY docker-compose.yml /app/docker-compose.yml
+# Copy the container based .env file to the runtime container
+COPY container/.env /app/.env
 
 # Copy the data folder to the runtime container
-COPY data/config/keycloak /app/data/keycloak
+COPY container/data/config/keycloak /app/data/keycloak
 
 # Specify the command to run the application
 CMD ["java", "-jar", "/app/blog-api.jar", "--spring.profiles.active=dev"]

@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Transactional
-@ContextConfiguration(initializers = EnvironmentInitializer.class, classes = DockerManager.class)
+@ContextConfiguration(initializers = EnvironmentInitializer.class, classes = TestContainersConfig.class)
 class BlogPostIntegrationTest {
 
     private static int BLOG_POST_ID;

@@ -164,7 +164,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
 
   blog-api:
-    image: blog-api:0.2.6
+    image: blog-api:0.2.7
     container_name: blog-api
     environment:
       SERVER_PORT: ${SERVER_PORT}
@@ -214,16 +214,17 @@ The one in the root directory applies to `Containerized Infrastructure` setup
 To run the service within a docker container:
 
 1. Start Docker and ensure it is running.
-2. Create a Docker image from the Dockerfile inside the container
+2. Navigate to the root directory
+3. Create a Docker image from the Dockerfile
 
     ```bash
-      docker build -t blog-api:0.2.6
+      docker build -t blog-api:0.2.7
     ```
 
-3. go to `container` package and run `docker-compose up` in the container package
-4. Ensure that the containers and services within are up and running
-5. Login on Keycloak http://localhost:8085/auth (admin:admin)
-6. Use the application
+4. go to `container` package and run `docker-compose up` in the container package
+5. Ensure that the containers and services within are up and running
+6. Login on Keycloak http://localhost:8085/auth (admin:admin)
+7. Use the application
 
 ### Containerized Infrastructure
 
@@ -233,7 +234,7 @@ To run the service outside a container:
 2. go to `container` package and run `docker-compose up --scale blog-api=0` in the container package
 3. Ensure that the containers and services within are up and running
 4. Login on Keycloak http://localhost:8085/auth (admin:admin)
-5. Run the application from an IDE or java -jar /target/blog-api-0.2.6-SNAPSHOT.jar
+5. Run the application from an IDE or java -jar /target/blog-api-0.2.7-SNAPSHOT.jar
 6. Use the application
 
 ### Using the application
@@ -253,7 +254,7 @@ You are good to go!
 
 ### Important Notes
 
-- All source and properties files read from the environment variables specified in the .env file.
+- All source and properties files read from the environment variables specified in the `.env` or `container/.env` file.
 - Ensure Docker, Java 21 and Maven are running before starting the application.
 - Before starting the application, make sure the containers for the infrastructure are healthy.
 

@@ -64,7 +64,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
 
   blog-api:
-    image: blog-api:0.2.6
+    image: blog-api:0.2.7
     container_name: blog-api
     environment:
       SERVER_PORT: ${SERVER_PORT}
