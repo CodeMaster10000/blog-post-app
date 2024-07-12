@@ -20,8 +20,8 @@ final class KeycloakConfig {
 
     KeycloakConfig(
             @Value("${keycloak.realm}") String keycloakRealm,
-            @Value("${admin-cli.client-secret}") String keycloakClientSecret,
             @Value("${keycloak-username}") String keycloakUsername,
+            @Value("${admin-cli.client-secret}") String keycloakClientSecret,
             @Value("${keycloak-password}") String keycloakPassword,
             @Value("${admin-cli.client-id}") String clientId) {
         this.keycloakRealm = keycloakRealm;

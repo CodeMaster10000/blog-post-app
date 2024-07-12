@@ -26,6 +26,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 final class BlogPostServiceTest {
 
+    private static final String MOCKITO_USER = "Mockito";
+    private static final String TAG_NAME = "Test tag";
+
     @Mock
     private BlogPostRepository blogPostRepository;
 
@@ -44,8 +47,7 @@ final class BlogPostServiceTest {
     @InjectMocks
     private BlogPostService blogPostService;
 
-    private static final String MOCKITO_USER = "Mockito";
-    private static final String TAG_NAME = "Test tag";
+    //Parameterized tests
 
     @Test
     void createBlogPost() {
